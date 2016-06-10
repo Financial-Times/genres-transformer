@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/Financial-Times/tme-reader/tmereader"
+	log "github.com/Sirupsen/logrus"
 	"net/http"
 )
 
@@ -11,18 +13,20 @@ type httpClient interface {
 type genreService interface {
 	getGenres() ([]genreLink, bool)
 	getGenreByUUID(uuid string) (genre, bool)
+	checkConnectivity() error
 }
 
 type genreServiceImpl struct {
-	repository repository
-	baseURL    string
-	genresMap  map[string]genre
-	genreLinks []genreLink
+	repository    tmereader.Repository
+	baseURL       string
+	genresMap     map[string]genre
+	genreLinks    []genreLink
+	taxonomyName  string
+	maxTmeRecords int
 }
 
-func newGenreService(repo repository, baseURL string) (genreService, error) {
-
-	s := &genreServiceImpl{repository: repo, baseURL: baseURL}
+func newGenreService(repo tmereader.Repository, baseURL string, taxonomyName string, maxTmeRecords int) (genreService, error) {
+	s := &genreServiceImpl{repository: repo, baseURL: baseURL, taxonomyName: taxonomyName, maxTmeRecords: maxTmeRecords}
 	err := s.init()
 	if err != nil {
 		return &genreServiceImpl{}, err
@@ -32,11 +36,23 @@ func newGenreService(repo repository, baseURL string) (genreService, error) {
 
 func (s *genreServiceImpl) init() error {
 	s.genresMap = make(map[string]genre)
-	tax, err := s.repository.getGenresTaxonomy()
-	if err != nil {
-		return err
+	responseCount := 0
+	log.Printf("Fetching genres from TME\n")
+	for {
+		terms, err := s.repository.GetTmeTermsFromIndex(responseCount)
+		if err != nil {
+			return err
+		}
+
+		if len(terms) < 1 {
+			log.Printf("Finished fetching genres from TME\n")
+			break
+		}
+		s.initGenresMap(terms)
+		responseCount += s.maxTmeRecords
 	}
-	s.initGenresMap(tax.Terms)
+	log.Printf("Added %d genre links\n", len(s.genreLinks))
+
 	return nil
 }
 
@@ -52,11 +68,20 @@ func (s *genreServiceImpl) getGenreByUUID(uuid string) (genre, bool) {
 	return genre, found
 }
 
-func (s *genreServiceImpl) initGenresMap(terms []term) {
-	for _, t := range terms {
-		sub := transformGenre(t)
-		s.genresMap[sub.UUID] = sub
-		s.genreLinks = append(s.genreLinks, genreLink{APIURL: s.baseURL + sub.UUID})
-		s.initGenresMap(t.Children.Terms)
+func (s *genreServiceImpl) checkConnectivity() error {
+	// TODO: Can we just hit an endpoint to check if TME is available? Or do we need to make sure we get genre taxonmies back?
+	//	_, err := s.repository.GetTmeTermsFromIndex()
+	//	if err != nil {
+	//		return err
+	//	}
+	return nil
+}
+
+func (s *genreServiceImpl) initGenresMap(terms []interface{}) {
+	for _, iTerm := range terms {
+		t := iTerm.(term)
+		top := transformGenre(t, s.taxonomyName)
+		s.genresMap[top.UUID] = top
+		s.genreLinks = append(s.genreLinks, genreLink{APIURL: s.baseURL + top.UUID})
 	}
 }

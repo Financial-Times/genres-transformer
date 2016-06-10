@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Financial-Times/go-fthealth/v1a"
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -10,6 +11,27 @@ import (
 
 type genresHandler struct {
 	service genreService
+}
+
+// HealthCheck does something
+func (h *genresHandler) HealthCheck() v1a.Check {
+	return v1a.Check{
+		BusinessImpact:   "Unable to respond to request for the genre data from TME",
+		Name:             "Check connectivity to TME",
+		PanicGuide:       "https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/genres-transfomer",
+		Severity:         1,
+		TechnicalSummary: "Cannot connect to TME to be able to supply genres",
+		Checker:          h.checker,
+	}
+}
+
+// Checker does more stuff
+func (h *genresHandler) checker() (string, error) {
+	err := h.service.checkConnectivity()
+	if err == nil {
+		return "Connectivity to TME is ok", err
+	}
+	return "Error connecting to TME", err
 }
 
 func newGenresHandler(service genreService) genresHandler {
@@ -48,4 +70,11 @@ func writeJSONResponse(obj interface{}, found bool, writer http.ResponseWriter) 
 func writeJSONError(w http.ResponseWriter, errorMsg string, statusCode int) {
 	w.WriteHeader(statusCode)
 	fmt.Fprintln(w, fmt.Sprintf("{\"message\": \"%s\"}", errorMsg))
+}
+
+//GoodToGo returns a 503 if the healthcheck fails - suitable for use from varnish to check availability of a node
+func (h *genresHandler) GoodToGo(writer http.ResponseWriter, req *http.Request) {
+	if _, err := h.checker(); err != nil {
+		writer.WriteHeader(http.StatusServiceUnavailable)
+	}
 }
