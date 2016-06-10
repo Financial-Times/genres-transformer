@@ -4,5 +4,5 @@
 *.html
 *coverage.*
 *.iml
-topics-transformer
+genres-transformer
 .idea/
