@@ -14,6 +14,9 @@ type genreService interface {
 	getGenres() ([]genreLink, bool)
 	getGenreByUUID(uuid string) (genre, bool)
 	checkConnectivity() error
+	getLocationCount() int
+	getLocationIds() []string
+	reload() error
 }
 
 type genreServiceImpl struct {
@@ -84,4 +87,41 @@ func (s *genreServiceImpl) initGenresMap(terms []interface{}) {
 		s.genresMap[top.UUID] = top
 		s.genreLinks = append(s.genreLinks, genreLink{APIURL: s.baseURL + top.UUID})
 	}
+}
+
+func (s *genreServiceImpl) getLocationCount() int {
+	return len(s.genreLinks)
+}
+
+func (s *genreServiceImpl) getLocationIds() []string {
+	i := 0
+	keys := make([]string, len(s.genresMap))
+
+	for k := range s.genresMap {
+		keys[i] = k
+		i++
+	}
+	return keys
+}
+
+func (s *genreServiceImpl) reload() error {
+	s.genresMap = make(map[string]genre)
+	responseCount := 0
+	log.Println("Fetching locations from TME")
+	for {
+		terms, err := s.repository.GetTmeTermsFromIndex(responseCount)
+		if err != nil {
+			return err
+		}
+
+		if len(terms) < 1 {
+			log.Println("Finished fetching locations from TME")
+			break
+		}
+		s.initGenresMap(terms)
+		responseCount += s.maxTmeRecords
+	}
+	log.Printf("Added %d location links\n", len(s.genreLinks))
+
+	return nil
 }
