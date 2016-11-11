@@ -81,7 +81,7 @@ func (h *genresHandler) GoodToGo(writer http.ResponseWriter, req *http.Request) 
 }
 
 func (h *genresHandler) getCount(writer http.ResponseWriter, req *http.Request) {
-	count := h.service.getLocationCount()
+	count := h.service.getGenreCount()
 	_, err := writer.Write([]byte(strconv.Itoa(count)))
 	if err != nil {
 		log.Warnf("Couldn't write count to HTTP response. count=%d %v\n", count, err)
@@ -90,21 +90,21 @@ func (h *genresHandler) getCount(writer http.ResponseWriter, req *http.Request) 
 }
 
 func (h *genresHandler) getIds(writer http.ResponseWriter, req *http.Request) {
-	ids := h.service.getLocationIds()
+	ids := h.service.getGenreIds()
 	writer.Header().Add("Content-Type", "text/plain")
 	if len(ids) == 0 {
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
 	enc := json.NewEncoder(writer)
-	type locationId struct {
+	type genreId struct {
 		ID string `json:"id"`
 	}
 	for _, id := range ids {
-		rID := locationId{ID: id}
+		rID := genreId{ID: id}
 		err := enc.Encode(rID)
 		if err != nil {
-			log.Warnf("Couldn't encode to HTTP response location with uuid=%s %v\n", id, err)
+			log.Warnf("Couldn't encode to HTTP response genre with uuid=%s %v\n", id, err)
 			continue
 		}
 	}

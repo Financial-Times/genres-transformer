@@ -14,8 +14,8 @@ type genreService interface {
 	getGenres() ([]genreLink, bool)
 	getGenreByUUID(uuid string) (genre, bool)
 	checkConnectivity() error
-	getLocationCount() int
-	getLocationIds() []string
+	getGenreCount() int
+	getGenreIds() []string
 	reload() error
 }
 
@@ -30,33 +30,11 @@ type genreServiceImpl struct {
 
 func newGenreService(repo tmereader.Repository, baseURL string, taxonomyName string, maxTmeRecords int) (genreService, error) {
 	s := &genreServiceImpl{repository: repo, baseURL: baseURL, taxonomyName: taxonomyName, maxTmeRecords: maxTmeRecords}
-	err := s.init()
+	err := s.reload()
 	if err != nil {
 		return &genreServiceImpl{}, err
 	}
 	return s, nil
-}
-
-func (s *genreServiceImpl) init() error {
-	s.genresMap = make(map[string]genre)
-	responseCount := 0
-	log.Printf("Fetching genres from TME\n")
-	for {
-		terms, err := s.repository.GetTmeTermsFromIndex(responseCount)
-		if err != nil {
-			return err
-		}
-
-		if len(terms) < 1 {
-			log.Printf("Finished fetching genres from TME\n")
-			break
-		}
-		s.initGenresMap(terms)
-		responseCount += s.maxTmeRecords
-	}
-	log.Printf("Added %d genre links\n", len(s.genreLinks))
-
-	return nil
 }
 
 func (s *genreServiceImpl) getGenres() ([]genreLink, bool) {
@@ -89,11 +67,11 @@ func (s *genreServiceImpl) initGenresMap(terms []interface{}) {
 	}
 }
 
-func (s *genreServiceImpl) getLocationCount() int {
+func (s *genreServiceImpl) getGenreCount() int {
 	return len(s.genreLinks)
 }
 
-func (s *genreServiceImpl) getLocationIds() []string {
+func (s *genreServiceImpl) getGenreIds() []string {
 	i := 0
 	keys := make([]string, len(s.genresMap))
 
@@ -107,7 +85,7 @@ func (s *genreServiceImpl) getLocationIds() []string {
 func (s *genreServiceImpl) reload() error {
 	s.genresMap = make(map[string]genre)
 	responseCount := 0
-	log.Println("Fetching locations from TME")
+	log.Println("Fetching genres from TME")
 	for {
 		terms, err := s.repository.GetTmeTermsFromIndex(responseCount)
 		if err != nil {
@@ -115,13 +93,13 @@ func (s *genreServiceImpl) reload() error {
 		}
 
 		if len(terms) < 1 {
-			log.Println("Finished fetching locations from TME")
+			log.Println("Finished fetching genres from TME")
 			break
 		}
 		s.initGenresMap(terms)
 		responseCount += s.maxTmeRecords
 	}
-	log.Printf("Added %d location links\n", len(s.genreLinks))
+	log.Printf("Added %d Genre links\n", len(s.genreLinks))
 
 	return nil
 }
