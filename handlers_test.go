@@ -13,6 +13,8 @@ import (
 const testUUID = "bba39990-c78d-3629-ae83-808c333c6dbc"
 const getGenresResponse = `[{"apiUrl":"http://localhost:8080/transformers/genres/bba39990-c78d-3629-ae83-808c333c6dbc"}]`
 const getGenreByUUIDResponse = `{"uuid":"bba39990-c78d-3629-ae83-808c333c6dbc","alternativeIdentifiers":{"TME":["MTE3-U3ViamVjdHM="],"uuids":["bba39990-c78d-3629-ae83-808c333c6dbc"]},"prefLabel":"SomeGenre","type":"Genre"}`
+const getGenresCountResponse = `1`
+const getGenresIdsResponse = `{"id":"bba39990-c78d-3629-ae83-808c333c6dbc"}`
 
 func TestHandlers(t *testing.T) {
 	assert := assert.New(t)
@@ -28,6 +30,8 @@ func TestHandlers(t *testing.T) {
 		{"Not found - get genre by uuid", newRequest("GET", fmt.Sprintf("/transformers/genres/%s", testUUID)), &dummyService{found: false, genres: []genre{genre{}}}, http.StatusNotFound, "application/json", ""},
 		{"Success - get genres", newRequest("GET", "/transformers/genres"), &dummyService{found: true, genres: []genre{genre{UUID: testUUID}}}, http.StatusOK, "application/json", getGenresResponse},
 		{"Not found - get genres", newRequest("GET", "/transformers/genres"), &dummyService{found: false, genres: []genre{}}, http.StatusNotFound, "application/json", ""},
+		{"Test Genre Count", newRequest("GET", "/transformers/genres/__count"), &dummyService{found: true, genres: []genre{genre{UUID: testUUID}}}, http.StatusOK, "text/plain", getGenresCountResponse},
+		{"Test Genre Ids", newRequest("GET", "/transformers/genres/__ids"), &dummyService{found: true, genres: []genre{genre{UUID: testUUID}}}, http.StatusOK, "text/plain", getGenresIdsResponse},
 	}
 
 	for _, test := range tests {
@@ -50,6 +54,9 @@ func router(s genreService) *mux.Router {
 	m := mux.NewRouter()
 	h := newGenresHandler(s)
 	m.HandleFunc("/transformers/genres", h.getGenres).Methods("GET")
+	m.HandleFunc("/transformers/genres/__ids", h.getIds).Methods("GET")
+	m.HandleFunc("/transformers/genres/__count", h.getCount).Methods("GET")
+	m.HandleFunc("/transformers/genres/__reload", h.reload).Methods("POST")
 	m.HandleFunc("/transformers/genres/{uuid}", h.getGenreByUUID).Methods("GET")
 	return m
 }
@@ -72,5 +79,24 @@ func (s *dummyService) getGenreByUUID(uuid string) (genre, bool) {
 }
 
 func (s *dummyService) checkConnectivity() error {
+	return nil
+}
+
+func (s *dummyService) getGenreCount() int {
+	return len(s.genres)
+}
+
+func (s *dummyService) getGenreIds() []string {
+	i := 0
+	keys := make([]string, len(s.genres))
+
+	for _, t := range s.genres {
+		keys[i] = t.UUID
+		i++
+	}
+	return keys
+}
+
+func (s *dummyService) reload() error {
 	return nil
 }
