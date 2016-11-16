@@ -84,6 +84,8 @@ func (s *genreServiceImpl) getGenreIds() []string {
 
 func (s *genreServiceImpl) reload() error {
 	s.genresMap = make(map[string]genre)
+	var links []genreLink
+	s.genreLinks = links
 	responseCount := 0
 	log.Println("Fetching genres from TME")
 	for {
