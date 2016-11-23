@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/xml"
+
 	"github.com/pborman/uuid"
 )
 
@@ -14,7 +15,7 @@ func transformGenre(tmeTerm term, taxonomyName string) genre {
 		UUID:                   uuid,
 		PrefLabel:              tmeTerm.CanonicalName,
 		AlternativeIdentifiers: alternativeIdentifiers{TME: []string{tmeIdentifier}, Uuids: []string{uuid}},
-		Type: "Genre",
+		Types: genreTypes,
 	}
 }
 

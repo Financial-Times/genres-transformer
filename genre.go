@@ -4,7 +4,7 @@ type genre struct {
 	UUID                   string                 `json:"uuid"`
 	AlternativeIdentifiers alternativeIdentifiers `json:"alternativeIdentifiers,omitempty"`
 	PrefLabel              string                 `json:"prefLabel"`
-	Type                   string                 `json:"type"`
+	Types                  []string               `json:"types"`
 }
 
 type alternativeIdentifiers struct {
@@ -15,3 +15,5 @@ type alternativeIdentifiers struct {
 type genreLink struct {
 	APIURL string `json:"apiUrl"`
 }
+
+var genreTypes = []string{"Thing", "Concept", "Classification", "Genre"}

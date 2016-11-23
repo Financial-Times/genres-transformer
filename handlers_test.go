@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 const testUUID = "bba39990-c78d-3629-ae83-808c333c6dbc"
 const getGenresResponse = `[{"apiUrl":"http://localhost:8080/transformers/genres/bba39990-c78d-3629-ae83-808c333c6dbc"}]`
-const getGenreByUUIDResponse = `{"uuid":"bba39990-c78d-3629-ae83-808c333c6dbc","alternativeIdentifiers":{"TME":["MTE3-U3ViamVjdHM="],"uuids":["bba39990-c78d-3629-ae83-808c333c6dbc"]},"prefLabel":"SomeGenre","type":"Genre"}`
+const getGenreByUUIDResponse = `{"uuid":"bba39990-c78d-3629-ae83-808c333c6dbc","alternativeIdentifiers":{"TME":["MTE3-U3ViamVjdHM="],"uuids":["bba39990-c78d-3629-ae83-808c333c6dbc"]},"prefLabel":"SomeGenre","types":["Thing","Concept","Classification","Genre"]}`
 const getGenresCountResponse = `1`
 const getGenresIdsResponse = `{"id":"bba39990-c78d-3629-ae83-808c333c6dbc"}`
 
