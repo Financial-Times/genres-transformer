@@ -22,4 +22,4 @@ With Docker:
 
 `docker build -t coco/genres-transformer .`
 
-`docker run -ti --env BASE_URL=<base url> --env STRUCTURE_SERVICE_BASE_URL=<structure service url> --env STRUCTURE_SERVICE_USERNAME=<user> --env STRUCTURE_SERVICE_PASSWORD=<pass> --env PRINCIPAL_HEADER=<header> coco/genres-transformer`
+`docker run -ti --env BASE_URL=<base url> --env TME_USERNAME=<foo> --env TME_PASSWORD=<bar> --env TOKEN=<foobar> --env PORT=8080 --env MAX_RECORDS=1000 --env SLICES=10 coco/genres-transformer`
