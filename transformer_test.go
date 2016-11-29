@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTransform(t *testing.T) {
@@ -23,7 +24,9 @@ func TestTransform(t *testing.T) {
 					TME:   []string{"UjB4Zk1UWTBPRE0xLVIyVnVjbVZ6-R2VucmVz"},
 					Uuids: []string{"c6844334-c743-31c7-a4ea-61587e006e9b"},
 				},
-				Type: "Genre"}},
+				PrimaryType:   primaryType,
+				TypeHierarchy: genreTypes,
+			}},
 	}
 
 	for _, test := range tests {

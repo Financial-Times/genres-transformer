@@ -3,8 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetGenres(t *testing.T) {
@@ -70,7 +71,7 @@ func (d *dummyRepo) GetTmeTermsFromIndex(startRecord int) ([]interface{}, error)
 	if startRecord > 0 {
 		return nil, d.err
 	}
-	var interfaces []interface{} = make([]interface{}, len(d.terms))
+	var interfaces = make([]interface{}, len(d.terms))
 	for i, data := range d.terms {
 		interfaces[i] = data
 	}
@@ -82,8 +83,9 @@ func (d *dummyRepo) GetTmeTermById(uuid string) (interface{}, error) {
 
 func getDummyGenre(uuid string, prefLabel string, tmeId string) genre {
 	return genre{
-		UUID:      uuid,
-		PrefLabel: prefLabel,
-		Type:      "Genre",
+		UUID:                   uuid,
+		PrefLabel:              prefLabel,
+		PrimaryType:            primaryType,
+		TypeHierarchy:          genreTypes,
 		AlternativeIdentifiers: alternativeIdentifiers{TME: []string{tmeId}, Uuids: []string{uuid}}}
 }
