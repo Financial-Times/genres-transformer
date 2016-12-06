@@ -5,7 +5,6 @@ type genre struct {
 	AlternativeIdentifiers alternativeIdentifiers `json:"alternativeIdentifiers,omitempty"`
 	PrefLabel              string                 `json:"prefLabel"`
 	PrimaryType            string                 `json:"type"`
-	TypeHierarchy          []string               `json:"types"`
 }
 
 type alternativeIdentifiers struct {
@@ -17,5 +16,4 @@ type genreLink struct {
 	APIURL string `json:"apiUrl"`
 }
 
-var genreTypes = []string{"Thing", "Concept", "Classification", "Genre"}
 var primaryType = "Genre"

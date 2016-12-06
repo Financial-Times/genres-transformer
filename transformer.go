@@ -16,7 +16,6 @@ func transformGenre(tmeTerm term, taxonomyName string) genre {
 		PrefLabel:              tmeTerm.CanonicalName,
 		AlternativeIdentifiers: alternativeIdentifiers{TME: []string{tmeIdentifier}, Uuids: []string{uuid}},
 		PrimaryType:            primaryType,
-		TypeHierarchy:          genreTypes,
 	}
 }
 

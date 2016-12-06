@@ -86,6 +86,5 @@ func getDummyGenre(uuid string, prefLabel string, tmeId string) genre {
 		UUID:                   uuid,
 		PrefLabel:              prefLabel,
 		PrimaryType:            primaryType,
-		TypeHierarchy:          genreTypes,
 		AlternativeIdentifiers: alternativeIdentifiers{TME: []string{tmeId}, Uuids: []string{uuid}}}
 }

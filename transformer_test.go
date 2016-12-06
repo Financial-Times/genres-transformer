@@ -24,8 +24,7 @@ func TestTransform(t *testing.T) {
 					TME:   []string{"UjB4Zk1UWTBPRE0xLVIyVnVjbVZ6-R2VucmVz"},
 					Uuids: []string{"c6844334-c743-31c7-a4ea-61587e006e9b"},
 				},
-				PrimaryType:   primaryType,
-				TypeHierarchy: genreTypes,
+				PrimaryType: primaryType,
 			}},
 	}
 
