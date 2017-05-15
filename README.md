@@ -1,3 +1,6 @@
+*DECOMISSIONED*
+See [Basic TME Transformer](https://github.com/Financial-Times/basic-tme-transformer) instead
+
 # genres-transformer
 
 [![Circle CI](https://circleci.com/gh/Financial-Times/genres-transformer/tree/master.png?style=shield)](https://circleci.com/gh/Financial-Times/genres-transformer/tree/master)
